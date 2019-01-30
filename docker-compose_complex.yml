@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo
+    restart: always
+    expose:
+      - "27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+    networks:
+      - cloud
+
+  # Setup a service named "app" (this can be whatever you want)
+  app:
+    # We want to build an image based on the docker file in the current folder
+    build: .
+    
+    # Mount the current folder into the /app directory in the image
+    volumes:
+      - "./:/app"
+    
+    # Join the network named "cloud"
+    networks:
+      - cloud
+    
+    # Expose the docker container's port 3000 to our local port 3000
+    ports:
+      - "5445:3000"
+
+    depends_on:
+      - mongo
+
+# Setup a network we can use for services to talk with eachother
+networks:
+  cloud:
